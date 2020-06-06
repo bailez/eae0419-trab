@@ -1,4 +1,6 @@
+import io
 import pandas as pd
+import numpy as np
 
 path = r'/home/bailez/data/Projetos/repos/eae0419-trab/'
 
@@ -35,9 +37,48 @@ new_df = new_df.reindex(sorted(new_df.columns), axis=1)
 
 df = old_df.append(new_df)
 # %% Emerging Markets
-
 countries = ['Brazil', 'Argentina', 'Turkey', 
              'South Africa', 'China', 'Chile', 
              'Iran', 'Mexico', 'Russia', 'Venezuela',
              'Colombia', 'India', 'Indonesia']
 em = df[countries]
+# %%
+exports = pd.read_excel(path + 'imf.xlsx').iloc[1:-2,:]
+exports.index = exports.iloc[:,0]
+exports = exports.iloc[:,1:].apply(pd.to_numeric,errors='coerce').T
+exports.index = pd.to_datetime(exports.index,format='%Y')
+texports = exports['1995':]
+texdf = df['1995':'2010']
+texdf = texdf.T.dropna().T
+texdf = texdf.drop(['Taiwan'],axis=1)
+texports = texports.T.dropna().T
+countries = ['Argentina', 'Australia', 'Austria', 'Brazil', 'Canada',
+       'Chile', "China, People's Republic of", 'Colombia', 'Denmark', 'Finland', 'France', 'Germany',
+       'Greece', 'Hong Kong SAR', 'Hungary', 'India', 'Indonesia', 'Ireland',
+       'Italy', 'Japan', 'Korea, Republic of', 'Malaysia', 'Mexico', 'Netherlands',
+       'New Zealand', 'Norway', 'Philippines', 'Portugal', 'Singapore',
+       'South Africa', 'Spain', 'Sweden', 'Switzerland', 'Thailand',
+       'Turkey', 'United Kingdom', 'United States', 'Venezuela']
+texports = texports[countries]
+
+texdf.columns = ['Argentina', 'Australia', 'Austria', 'Belgium', 'Brazil', 'Canada',
+       'Chile', 'China', 'Colombia', 'Denmark', 'Finland', 'France', 'Germany',
+       'Greece', 'Hong Kong', 'Hungary', 'India', 'Indonesia', 'Ireland',
+       'Italy', 'Japan', 'South Korea', 'Malaysia', 'Mexico', 'Netherlands',
+       'New Zealand', 'Norway', 'Philippines', 'Portugal', 'Singapore',
+       'South Africa', 'Spain', 'Sweden', 'Switzerland', 'Thailand', 'Turkey',
+       'United Kingdom', 'United States', 'Venezuela']
+texports.columns = ['Argentina', 'Australia', 'Austria', 'Brazil', 'Canada', 'Chile',
+       'China', 'Colombia', 'Denmark', 'Finland',
+       'France', 'Germany', 'Greece', 'Hong Kong', 'Hungary', 'India',
+       'Indonesia', 'Ireland', 'Italy', 'Japan', 'South Korea',
+       'Malaysia', 'Mexico', 'Netherlands', 'New Zealand', 'Norway',
+       'Philippines', 'Portugal', 'Singapore', 'South Africa', 'Spain',
+       'Sweden', 'Switzerland', 'Thailand', 'Turkey', 'United Kingdom',
+       'United States', 'Venezuela']
+
+texports = texports.reindex(sorted(texports.columns), axis=1)
+texdf = texdf.reindex(sorted(texdf.columns), axis=1)
+logdf = np.log(texdf)
+logex = np.log(texports)
+logdf.T.corrwith(logex.T,axis=1)
