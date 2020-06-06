@@ -2,6 +2,7 @@ import pandas as pd
 
 path = r'/home/bailez/data/Projetos/repos/eae0419-trab/'
 
+# %% old data
 old_df = pd.read_excel(path + '95-11.xlsx').iloc[1:,18:]
 def clear_old_data(x):
     return str(x[:4])
@@ -30,4 +31,13 @@ new_df.index = pd.to_datetime(new_df.index, format="%Y")
 new_df = new_df.apply(pd.to_numeric, errors="coerce")
 new_df = new_df.sort_index()
 new_df = new_df.reindex(sorted(new_df.columns), axis=1)
+# %% concat all data
 
+df = old_df.append(new_df)
+# %% Emerging Markets
+
+countries = ['Brazil', 'Argentina', 'Turkey', 
+             'South Africa', 'China', 'Chile', 
+             'Iran', 'Mexico', 'Russia', 'Venezuela',
+             'Colombia', 'India', 'Indonesia']
+em = df[countries]
